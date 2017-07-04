@@ -2,7 +2,7 @@ clear all;
 close all;
 
 %targetPath='/Users/Inkyu/Research/ETH_Postdoc/Flourish/HyperspectralCamera/dev/data/Sequoia/20170518-Manual-Flight-2m-Weed-Field-Weeds';
-targetPath='/Volumes/MyStorage/Research/weedNet/data/Sequoia/20170616-2m-plant-n-crop/Crop-Only-2m_test';
+targetPath='../../data/Sequoia/Test';
 %targetPath='/Users/Inkyu/Research/ETH_Postdoc/Flourish/HyperspectralCamera/dev/data/Sequoia/20170616-2m-plant-n-crop/Weed-Plant-2m-First';
 %targetPath='/Users/Inkyu/Research/ETH_Postdoc/Flourish/HyperspectralCamera/dev/data/Sequoia/20170616-2m-plant-n-crop/Weed-Plant-2m-Second';
 

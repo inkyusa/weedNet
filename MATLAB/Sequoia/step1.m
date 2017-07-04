@@ -85,13 +85,13 @@ display('3. undistort images');
 dirInfo=dir([targetPath '/' 'multi']);
 dirInfo(1:2)=[]; %delete './' and '../'
 mkdir([targetPath '/' 'sort_undist']);
-calibParamsNIR='/Users/Inkyu/Research/ETH_Postdoc/Flourish/HyperspectralCamera/dev/data/calibration/Intrinsic/calib/calibNIR.mat';
+calibParamsNIR='./calib/calibNIR.mat';
 load(calibParamsNIR);
-calibParamsRED='/Users/Inkyu/Research/ETH_Postdoc/Flourish/HyperspectralCamera/dev/data/calibration/Intrinsic/calib/calibRED.mat';
+calibParamsRED='./calib/calibRED.mat';
 load(calibParamsRED);
-calibParamsGRE='/Users/Inkyu/Research/ETH_Postdoc/Flourish/HyperspectralCamera/dev/data/calibration/Intrinsic/calib/calibGRE.mat';
+calibParamsGRE='./calib/calibGRE.mat';
 load(calibParamsGRE);
-calibParamsREG='/Users/Inkyu/Research/ETH_Postdoc/Flourish/HyperspectralCamera/dev/data/calibration/Intrinsic/calib/calibREG.mat';
+calibParamsREG='./calib/calibREG.mat';
 load(calibParamsREG);
 
 

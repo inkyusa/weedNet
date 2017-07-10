@@ -1,6 +1,6 @@
 clear all;
 close all;
-
+path(path, '../funcs');
 targetPath='../../data/Xemia/Test';
 wavelengthsRowMajor = [615, 623, 608, 790, 686,...
             816, 828, 803, 791, 700,...

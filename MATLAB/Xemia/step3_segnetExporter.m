@@ -1,55 +1,73 @@
 clear all;
 close all;
-nir_wl=790;
-red_wl=660;
-green_wl=550;
-reg_wl=735;
 
-target1=getFolderInfo('../../data/Sequoia/Test','crop');
-gpuPath='/home/yourFolder/SegNet-Tutorial/Sequoia';
+targetPath='../../data/Xemia/Test';
+wavelengthsRowMajor = [615, 623, 608, 790, 686,...
+            816, 828, 803, 791, 700,...
+            765, 778, 752, 739, 714,...
+            653, 662, 645, 636, 678,...
+            867, 864, 857, 845, 670];
+%myWaveLength=[670;678;752;778;790;857];
+myWaveLength=wavelengthsRowMajor';
+target1=getFolderInfo(targetPath,'crop'); %arg2= 'crop' or 'weed;'
+gpuPath='/home/yourFolder/SegNet-Tutorial/Xemia';
 
 
 outputFolder='./segnet';
 
-trainPath=[outputFolder '/' 'train'];
-trainannoPath=[outputFolder  '/' 'trainannot'];
-valPath=[outputFolder  '/' 'val'];
-valannoPath=[outputFolder  '/' 'valannot'];
-testPath=[outputFolder  '/' 'test'];
-testannoPath=[outputFolder '/' 'testannot'];
+trainPath=[outputFolder '/train'];
+trainImgPath = [outputFolder '/train/img'];
+trainTxtPath = [outputFolder '/train/txt'];
+trainannoPath=[outputFolder  '/train/annot'];
+
+valPath=[outputFolder  '/val'];
+valImgPath = [outputFolder '/val/img'];
+valTxtPath = [outputFolder '/val/txt'];
+valannoPath=[outputFolder  '/val/valannot'];
+
+testPath=[outputFolder  '/test'];
+testImgPath = [outputFolder '/test/img'];
+testTxtPath = [outputFolder '/test/txt'];
+testannoPath=[outputFolder  '/test/annot'];
 
 mkdir(outputFolder);
 mkdir(trainPath);
+mkdir(trainImgPath);
+mkdir(trainTxtPath);
 mkdir(trainannoPath);
-mkdir(testPath);
-mkdir(testannoPath);
+
 mkdir(valPath);
 mkdir(valannoPath);
+
+mkdir(testPath);
+mkdir(testImgPath);
+mkdir(testTxtPath);
+mkdir(testannoPath);
+
 
 %======================
 %   Target1
 %======================
 
 %[target1.trainInd,target1.valInd,target1.testInd]=dividerand(length(target1.dirImgInfo),0.9,0.0,0.1);
-[target1.trainInd,target1.valInd,target1.testInd]=dividerand(length(target1.dirImgInfo),0.01,0.0,0.99);
+[target1.trainInd,target1.valInd,target1.testInd]=dividerand(length(target1.dirImgInfo),0.8,0.0,0.2);
 
 for i=1:length(target1.trainInd)
    %train image copy
-   srcNirImgFileName=[target1.path '/plant/img/' target1.dirImgInfo(target1.trainInd(i)).name];
+   
    [~,name,~]=fileparts(target1.dirImgInfo(target1.trainInd(i)).name);
-   dstNirImgFileName=[trainPath '/' name '_' 'nir_' target1.type '.png'];   
    
-   %Copy NIR
-   copyfile(srcNirImgFileName,dstNirImgFileName);
-   %Copy NDVI
-   srcNDVIImgFileName=[target1.path '/ndvi/' target1.dirImgInfo(target1.trainInd(i)).name];
-   dstNDVIImgFileName=[trainPath '/' name '_' 'ndvi_' target1.type '.png'];
-   copyfile(srcNDVIImgFileName,dstNDVIImgFileName);
-   
-   %Copy RED
-   srcRedImgFileName=[target1.path '/sort_regi/' name '/' num2str(red_wl) '.png'];
-   dstRedIImgFileName=[trainPath '/' name '_' 'red_' target1.type '.png'];
-   copyfile(srcRedImgFileName,dstRedIImgFileName);
+   for j=1:length(myWaveLength)
+       srcImgFileName=[target1.path '/sort_regi/' name '/' num2str(myWaveLength(j)) '.png'];
+       dstImgFileName=[trainPath '/img/' name '/' name '_' num2str(myWaveLength(j)) '_' target1.type '.png'];
+       %Folder check.
+       if exist([trainPath '/img' name],'dir');
+        copyfile(srcImgFileName,dstImgFileName);
+       else
+           mkdir([trainPath '/img/' name]);
+           copyfile(srcImgFileName,dstImgFileName);
+       end
+   end
    
    srcSegFileName=[target1.path '/plant/seg/' target1.dirImgInfo(target1.trainInd(i)).name];
    imgPlant=imread(srcSegFileName);
@@ -65,57 +83,53 @@ end
 %Validation, Segnet doesn't utilize this. Therefore, split dataset 90%
 %train and 10% test.
 for i=1:length(target1.valInd)
-   %validation image copy
-   srcNirImgFileName=[target1.path '/plant/img/' target1.dirImgInfo(target1.valInd(i)).name];
    [~,name,~]=fileparts(target1.dirImgInfo(target1.valInd(i)).name);
-   dstNirImgFileName=[valPath '/' name '_' 'nir_' target1.type '.png'];
-   copyfile(srcNirImgFileName,dstNirImgFileName);
-   %Copy NDVI
-   srcNDVIImgFileName=[target1.path '/ndvi/' target1.dirImgInfo(target1.valInd(i)).name];
-   dstNDVIImgFileName=[valPath '/' name '_' 'ndvi_' target1.type '.png'];
-   copyfile(srcNDVIImgFileName,dstNDVIImgFileName);
    
-   %Copy RED
-   srcRedImgFileName=[target1.path '/sort_regi/' name '/' num2str(red_wl) '.png'];
-   dstRedIImgFileName=[valPath '/' name '_' 'red_' target1.type '.png'];
-   copyfile(srcRedImgFileName,dstRedIImgFileName);
+   for j=1:length(myWaveLength)
+       srcImgFileName=[target1.path '/sort_regi/' name '/' num2str(myWaveLength(j)) '.png'];
+       dstImgFileName=[valPath '/img/' name '/' name '_' num2str(myWaveLength(j)) '_' target1.type '.png'];
+       %Folder check.
+       if exist([valPath '/img' name],'dir');
+        copyfile(srcImgFileName,dstImgFileName);
+       else
+           mkdir([valPath '/img/' name]);
+           copyfile(srcImgFileName,dstImgFileName);
+       end
+   end
    
    srcSegFileName=[target1.path '/plant/seg/' target1.dirImgInfo(target1.valInd(i)).name];
    imgPlant=imread(srcSegFileName);
    imgSz=size(imgPlant);
-   %validataion annot generation
+   %train annot generation
    imgGt=zeros(imgSz); %!!!!! Soil label=0 !!!!!!
    if strcmp(target1.type,'crop') imgGt(find(imgPlant))=1; end% !!!!!Plant label=1 !!!!!!
    if strcmp(target1.type,'weed') imgGt(find(imgPlant))=2; end% !!!!! Weed label=2 !!!!!!
    dstSegFileName=[valannoPath '/' name '_' target1.type '.png'];
    imwrite(uint8(imgGt),dstSegFileName);
+   
 end
 
 %Testing
 
 for i=1:length(target1.testInd)
-   %test image copy
-   srcNirImgFileName=[target1.path '/plant/img/' target1.dirImgInfo(target1.testInd(i)).name];
    [~,name,~]=fileparts(target1.dirImgInfo(target1.testInd(i)).name);
-   dstNirImgFileName=[testPath '/' name '_' 'nir_' target1.type '.png'];
-   %Copy NIR
-   copyfile(srcNirImgFileName,dstNirImgFileName);
-   %Copy NDVI
-   srcNDVIImgFileName=[target1.path '/ndvi/' target1.dirImgInfo(target1.testInd(i)).name];
-   dstNDVIImgFileName=[testPath '/' name '_' 'ndvi_' target1.type '.png'];
-   copyfile(srcNDVIImgFileName,dstNDVIImgFileName);
    
-   %Copy RED
-   srcRedImgFileName=[target1.path '/sort_regi/' name '/' num2str(red_wl) '.png'];
-   dstRedIImgFileName=[testPath '/' name '_' 'red_' target1.type '.png'];
-   copyfile(srcRedImgFileName,dstRedIImgFileName);
-   
-   
+   for j=1:length(myWaveLength)
+       srcImgFileName=[target1.path '/sort_regi/' name '/' num2str(myWaveLength(j)) '.png'];
+       dstImgFileName=[testPath '/img/' name '/' name '_' num2str(myWaveLength(j)) '_' target1.type '.png'];
+       %Folder check.
+       if exist([testPath '/img' name],'dir');
+        copyfile(srcImgFileName,dstImgFileName);
+       else
+           mkdir([testPath '/img/' name]);
+           copyfile(srcImgFileName,dstImgFileName);
+       end
+   end
    
    srcSegFileName=[target1.path '/plant/seg/' target1.dirImgInfo(target1.testInd(i)).name];
    imgPlant=imread(srcSegFileName);
    imgSz=size(imgPlant);
-   %test annot generation
+   %train annot generation
    imgGt=zeros(imgSz); %!!!!! Soil label=0 !!!!!!
    if strcmp(target1.type,'crop') imgGt(find(imgPlant))=1; end% !!!!!Plant label=1 !!!!!!
    if strcmp(target1.type,'weed') imgGt(find(imgPlant))=2; end% !!!!! Weed label=2 !!!!!!
@@ -229,8 +243,6 @@ end
 %     imshow(rgb);
 %     pause();
 
-
-
 %===================
 %   Train
 %===================
@@ -238,44 +250,29 @@ end
 trainFolderPath=trainPath;
 trainAnnotFolderPath=trainannoPath;
 
-dirTrainInfo=dir(trainFolderPath);
+dirTrainImgInfo=dir(trainImgPath);
 dirTrainAnnotInfo=dir(trainAnnotFolderPath);
-dirTrainInfo(1)=[];  %delete '.' and '..'
-dirTrainInfo(1)=[];
-dirTrainAnnotInfo(1)=[];  %delete '.' and '..'
-dirTrainAnnotInfo(1)=[];
+dirTrainImgInfo(1:2)=[]; %delete '.' and '..'
+dirTrainAnnotInfo(1:2)=[];
 
-fileTrainNirTxt = fopen('./segnet/trainNir.txt','w');
-fileTrainNDVITxt = fopen('./segnet/trainNDVI.txt','w');
-fileTrainRedTxt = fopen('./segnet/trainRed.txt','w');
+fileTrainTxt=cell(length(myWaveLength));
+for k=1:length(myWaveLength)
+    fileName=['./segnet/train/txt/' 'train' num2str(myWaveLength(k)) '.txt'];
+    fileTrainTxt{k}=fopen(fileName,'w');
+end
 
-nirIdx=[];
-ndviIdx=[];
-redIdx=[];
-for i=1:length(dirTrainInfo)
-    if(strfind(dirTrainInfo(i).name,'nir'))
-        nirIdx=[nirIdx;i];
-    elseif (strfind(dirTrainInfo(i).name,'ndvi'))
-        ndviIdx=[ndviIdx;i];
-    elseif (strfind(dirTrainInfo(i).name,'red'))
-        redIdx=[redIdx;i];
+for i=1:length(dirTrainImgInfo)
+    dirInfo=dir([trainImgPath '/' dirTrainImgInfo(i).name '/*.png']);
+    for j=1:length(dirInfo)
+        if j==1
+            train670Str=fullfile(gpuPath,'train/img',dirTrainImgInfo(i).name, dirInfo(j).name);
+            trainAnnotStr=fullfile(gpuPath,'train/annot',dirTrainAnnotInfo(i).name);
+            fprintf(fileTrainTxt{j},'%s %s\n',train670Str,trainAnnotStr);
+        else
+            trainImgStr=fullfile(gpuPath,'train/img',dirTrainImgInfo(i).name,dirInfo(j).name);
+            fprintf(fileTrainTxt{j},'%s\n',trainImgStr);
+        end
     end
-end
-
-for i=1:length(nirIdx)
-    trainNirStr=fullfile(gpuPath,'train',dirTrainInfo(nirIdx(i)).name);
-    trainAnnotStr=fullfile(gpuPath,'trainannot',dirTrainAnnotInfo(i).name);
-    fprintf(fileTrainNirTxt,'%s %s\n',trainNirStr,trainAnnotStr);
-end
-
-for i=1:length(ndviIdx)
-    trainNDVIStr=fullfile(gpuPath,'train',dirTrainInfo(ndviIdx(i)).name);
-    fprintf(fileTrainNDVITxt,'%s\n',trainNDVIStr);
-end
-
-for i=1:length(redIdx)
-    trainRedStr=fullfile(gpuPath,'train',dirTrainInfo(redIdx(i)).name);
-    fprintf(fileTrainRedTxt,'%s\n',trainRedStr);
 end
 
 %===================
@@ -285,47 +282,33 @@ end
 valFolderPath=valPath;
 valAnnotFolderPath=valannoPath;
 
-dirValInfo=dir(valFolderPath);
+dirValImgInfo=dir(valImgPath);
 dirValAnnotInfo=dir(valAnnotFolderPath);
-dirValInfo(1)=[];  %delete '.' and '..'
-dirValInfo(1)=[];
-dirValAnnotInfo(1)=[];  %delete '.' and '..'
-dirValAnnotInfo(1)=[];
+if length(dirValImgInfo)>=2
+    dirValImgInfo(1)=[];  %delete '.' and '..'
+    dirValImgInfo(1)=[];
+    dirValAnnotInfo(1)=[];  %delete '.' and '..'
+    dirValAnnotInfo(1)=[];
+    fileValTxt=cell(length(myWaveLength));
+    for k=1:length(myWaveLength)
+        fileName=['./segnet/val/txt/' 'val' num2str(myWaveLength(k)) '.txt'];
+        fileValTxt{k}=fopen(fileName,'w');
+    end
 
-fileValNirTxt = fopen('./segnet/valNir.txt','w');
-fileValNDVITxt = fopen('./segnet/valNDVI.txt','w');
-fileValRedTxt = fopen('./segnet/valRed.txt','w');
-
-nirIdx=[];
-ndviIdx=[];
-redIdx=[];
-for i=1:length(dirValInfo)
-    if(strfind(dirValInfo(i).name,'nir'))
-        nirIdx=[nirIdx;i];
-    elseif (strfind(dirValInfo(i).name,'ndvi'))
-        ndviIdx=[ndviIdx;i];
-    elseif (strfind(dirValInfo(i).name,'red'))
-        redIdx=[redIdx;i];
+    for i=1:length(dirValImgInfo)
+        dirInfo=dir([valImgPath '/' dirValImgInfo(i).name '/*.png']);
+        for j=1:length(dirInfo)
+            if j==1
+                val670Str=fullfile(gpuPath,'val/img',dirValImgInfo(i).name, dirInfo(j).name);
+                valAnnotStr=fullfile(gpuPath,'val/annot',dirValAnnotInfo(i).name);
+                fprintf(fileValTxt{j},'%s %s\n',val670Str,valAnnotStr);
+            else
+                valImgStr=fullfile(gpuPath,'val/img',dirValImgInfo(i).name,dirInfo(j).name);
+                fprintf(fileValTxt{j},'%s\n',valImgStr);
+            end
+        end
     end
 end
-
-
-for i=1:length(nirIdx)
-    valNirStr=fullfile(gpuPath,'val',dirValInfo(nirIdx(i)).name);
-    valAnnotStr=fullfile(gpuPath,'valannot',dirValAnnotInfo(i).name);
-    fprintf(fileValNirTxt,'%s %s\n',valNirStr,valAnnotStr);
-end
-
-for i=1:length(ndviIdx)
-    valNDVIStr=fullfile(gpuPath,'val',dirValInfo(ndviIdx(i)).name);
-    fprintf(fileValNDVITxt,'%s\n',valNDVIStr);
-end
-
-for i=1:length(redIdx)
-    valRedStr=fullfile(gpuPath,'val',dirValInfo(redIdx(i)).name);
-    fprintf(fileValRedTxt,'%s\n',valRedStr);
-end
-
 %===================
 %   Test
 %===================
@@ -333,46 +316,31 @@ end
 testFolderPath=testPath;
 testAnnotFolderPath=testannoPath;
 
-dirTestInfo=dir(testFolderPath);
+dirTestImgInfo=dir(testImgPath);
 dirTestAnnotInfo=dir(testAnnotFolderPath);
-dirTestInfo(1)=[];  %delete '.' and '..'
-dirTestInfo(1)=[];
-dirTestAnnotInfo(1)=[];  %delete '.' and '..'
-dirTestAnnotInfo(1)=[];
+if length(dirTestImgInfo)>=2
+    dirTestImgInfo(1)=[];  %delete '.' and '..'
+    dirTestImgInfo(1)=[];
+    dirTestAnnotInfo(1)=[];  %delete '.' and '..'
+    dirTestAnnotInfo(1)=[];
 
-fileTestNirTxt = fopen('./segnet/testNir.txt','w');
-fileTestNDVITxt = fopen('./segnet/testNDVI.txt','w');
-fileTestRedTxt = fopen('./segnet/testRed.txt','w');
+    fileTestTxt=cell(length(myWaveLength));
+    for k=1:length(myWaveLength)
+        fileName=['./segnet/test/txt/' 'test' num2str(myWaveLength(k)) '.txt'];
+        fileTestTxt{k}=fopen(fileName,'w');
+    end
 
-nirIdx=[];
-ndviIdx=[];
-redIdx=[];
-for i=1:length(dirTestInfo)
-    if(strfind(dirTestInfo(i).name,'nir'))
-        nirIdx=[nirIdx;i];
-    elseif (strfind(dirTestInfo(i).name,'ndvi'))
-        ndviIdx=[ndviIdx;i];
-    elseif (strfind(dirTestInfo(i).name,'red'))
-        redIdx=[redIdx;i];
+    for i=1:length(dirTestImgInfo)
+        dirInfo=dir([testImgPath '/' dirTestImgInfo(i).name '/*.png']);
+        for j=1:length(dirInfo)
+            if j==1
+                test670Str=fullfile(gpuPath,'test/img',dirTestImgInfo(i).name, dirInfo(j).name);
+                testAnnotStr=fullfile(gpuPath,'test/annot',dirTestAnnotInfo(i).name);
+                fprintf(fileTestTxt{j},'%s %s\n',test670Str,testAnnotStr);
+            else
+                testImgStr=fullfile(gpuPath,'test/img',dirTestImgInfo(i).name,dirInfo(j).name);
+                fprintf(fileTestTxt{j},'%s\n',testImgStr);
+            end
+        end
     end
 end
-
-
-for i=1:length(nirIdx)
-    testNirStr=fullfile(gpuPath,'test',dirTestInfo(nirIdx(i)).name);
-    testAnnotStr=fullfile(gpuPath,'testannot',dirTestAnnotInfo(i).name);
-    fprintf(fileTestNirTxt,'%s %s\n',testNirStr,testAnnotStr);
-end
-
-for i=1:length(ndviIdx)
-    testNDVIStr=fullfile(gpuPath,'test',dirTestInfo(ndviIdx(i)).name);
-    fprintf(fileTestNDVITxt,'%s\n',testNDVIStr);
-end
-
-for i=1:length(redIdx)
-    testRedStr=fullfile(gpuPath,'test',dirTestInfo(redIdx(i)).name);
-    fprintf(fileTestRedTxt,'%s\n',testRedStr);
-end
-
-
-

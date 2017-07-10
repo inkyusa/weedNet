@@ -1,11 +1,7 @@
 clear all;
 close all;
-
-%target1=getFolderInfo('/Users/Inkyu/Research/ETH_Postdoc/Flourish/HyperspectralCamera/dev/data/Sequoia/20170616-2m-plant-n-crop/Crop-Only-2m','crop');
-target1=getFolderInfo('/Users/Inkyu/Research/ETH_Postdoc/Flourish/HyperspectralCamera/dev/data/Sequoia/20170616-2m-plant-n-crop/Weed-Plant-2m-Second','weed');
-
-%target2=getFolderInfo('/Users/Inkyu/Research/ETH_Postdoc/Flourish/HyperspectralCamera/dev/data/Sequoia/20170616-2m-plant-n-crop/Only-Weed_2m','weed');
-gpuPath='/home/enddl22/workspace/SegNet-Tutorial/Sequoia03';
+target1=getFolderInfo('../../data/Sequoia/Test','crop');
+gpuPath='/home/yourFolder/SegNet-Tutorial/Sequoia';
 
 
 outputFolder='./segnet';

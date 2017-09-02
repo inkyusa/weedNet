@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-targetPath='../../data/Sequoia/Test';
+targetPath='/Volumes/MyStorage/Research/weedNet/data/Sequoia/Weed-Plant-2m-all';
 
 nir_wl=790;
 red_wl=660;
@@ -9,7 +9,7 @@ green_wl=550;
 reg_wl=735;
 blobSize=200;
 gauss_th=2.5;
-ndvi_th=0.7;
+ndvi_th=0.8;
 %===================================================================
 %   Seperate hyperspectral and rgb images into different folders
 %===================================================================

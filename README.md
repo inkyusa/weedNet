@@ -4,6 +4,9 @@ weedNet related tools
 Please head to [dataset](https://github.com/inkyusa/weedNet/tree/master/data/Sequoia) for the multispectral images (NIR, Red, and NDVI with their labels).
 
 ***
+Due to several requests for raw multi-spectral images (4ch), we unofficially made this available [raw dataset](http://goo.gl/Xbj7y1) and you can checkout [this branch](https://github.com/inkyusa/weedNet/tree/rgb-samples) for sample RGB images. Please note that these datasets do have the corresponding labels and we couldn't guarantee the maintenance of them due to limited resources. Thank you for your understandings and hope this helps.
+***
+
 ### Publications
 If our work helps your works in an academic/research context, please cite the following publication(s):
 * I. Sa, Z. Chen, M. Popovic, R. Khanna, F. Liebisch, J. Nieto and R. Siegwart, **"weedNet: Dense Semantic Weed Classification Using Multispectral Images and MAV for Smart Farming"**, 2018, [IEEE Robotics and Automation Letters](http://ieeexplore.ieee.org/document/8115245/) or ([arxiv pdf](https://arxiv.org/abs/1709.03329))

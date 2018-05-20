@@ -1,6 +1,4 @@
-# weedNet
-weedNet related tools
-
+# Multispectral dataset 
 Please head to [dataset](https://github.com/inkyusa/weedNet/tree/master/data/Sequoia) for the multispectral images (NIR, Red, and NDVI with their labels).
 
 
@@ -8,6 +6,7 @@ Please head to [dataset](https://github.com/inkyusa/weedNet/tree/master/data/Seq
 Due to several requests for raw multi-spectral images (4ch), we unofficially made this available [raw dataset](https://drive.google.com/open?id=1moUzw39CEp3kXBzRfFcHEOEi4D4WRmZM) (1.8GB) and you can checkout [this branch](https://github.com/inkyusa/weedNet/tree/rgb-samples) for sample RGB images. Please note that these datasets do not have the corresponding labels and we couldn't guarantee the maintenance of them due to limited resources. Thank you for your understandings and hope this helps.
 ***
 
+### Training weedNet
 If you want to know more about how to train a network (using a caffe framework) with this dataset, here we have [an experimental repo](https://github.com/inkyusa/weedNet-devel) that allows you to do this (courtesy by Marija Popovic).
 
 ### Publications

@@ -9,6 +9,20 @@ Due to several requests for raw multi-spectral images (4ch), we unofficially mad
 ### Training weedNet
 If you want to know more about how to train a network (using a caffe framework) with this dataset, here we have [an experimental repo](https://github.com/inkyusa/weedNet-devel) that allows you to do this (courtesy by Marija Popovic).
 
+### Annotated ground truth images
+The annotated ground truth images for training and testing are indexed images meaning that they were filled with class IDs rather than RGB values. For example, the background is 0, crop is 1, and weed is 2. You can directly use these indexed files for model training using Caffe SegNet (or other networks) without any data conversions.  If you want to visualize these files (e.g., https://github.com/inkyusa/weedNet/blob/master/data/Sequoia/SequoiaRed_30/testannot/0000.png) the following MATLAB code snippet may help;
+```
+im=imread('./0000.png');
+plantColor=[0 1 0]; %green
+weedColor=[1 0 0]; %red
+map=[plantColor;weedColor];
+rgb=label2rgb(im,map,[0,0,0]); %label img, map, bg color
+imshow(rgb);
+```
+
+<img width="735" alt="screen shot 2018-09-28 at 17 44 11" src="https://user-images.githubusercontent.com/5215050/46218940-39d22300-c346-11e8-9c19-a9ee8420b4ce.png">
+
+
 ### Publications
 If our work helps your works in an academic/research context, please cite the following publication(s):
 * I. Sa, Z. Chen, M. Popovic, R. Khanna, F. Liebisch, J. Nieto and R. Siegwart, **"weedNet: Dense Semantic Weed Classification Using Multispectral Images and MAV for Smart Farming"**, 2018, [IEEE Robotics and Automation Letters](http://ieeexplore.ieee.org/document/8115245/) or ([arxiv pdf](https://arxiv.org/abs/1709.03329))
